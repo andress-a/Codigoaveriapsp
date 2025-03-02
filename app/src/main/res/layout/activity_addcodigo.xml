@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btnCancelar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="81dp"
+        android:layout_marginEnd="24dp"
+        android:onClick="clickCancelar"
+        android:text="Cancelar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnAgregar"
+        app:layout_constraintTop_toBottomOf="@+id/edtSolucion" />
+
+    <EditText
+        android:id="@+id/edtCodigo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="74dp"
+        android:layout_marginTop="166dp"
+        android:ems="10"
+        android:hint="Codigo:"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edtDescripcion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="38dp"
+        android:ems="10"
+        android:hint="Descripción:"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="@+id/edtCodigo"
+        app:layout_constraintTop_toBottomOf="@+id/edtCodigo" />
+
+    <EditText
+        android:id="@+id/edtSolucion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="29dp"
+        android:ems="10"
+        android:hint="Solucion:"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="@+id/edtDescripcion"
+        app:layout_constraintTop_toBottomOf="@+id/edtDescripcion" />
+
+    <Button
+        android:id="@+id/btnAgregar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="18dp"
+        android:onClick="clickAdd"
+        android:text="Agregar"
+        app:layout_constraintBaseline_toBaselineOf="@+id/btnCancelar"
+        app:layout_constraintEnd_toStartOf="@+id/btnCancelar"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

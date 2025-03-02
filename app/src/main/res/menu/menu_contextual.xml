@@ -1,0 +1,6 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/eliminar_item"
+        android:title="Eliminar Código"
+        android:icon="@android:drawable/ic_menu_delete"/>
+</menu>

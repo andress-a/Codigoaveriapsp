@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "339697793681",
+    "project_id": "codigosaveriatfg",
+    "storage_bucket": "codigosaveriatfg.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339697793681:android:3073055d822d1b12fe5d30",
+        "android_client_info": {
+          "package_name": "com.example.codigoaveriapsp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAT8BAlp0FdxFjT_k3MC0ls_dLO-SSpUwE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
