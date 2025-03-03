@@ -1,5 +1,6 @@
 package com.example.codigoaveriapsp;
 
+import android.annotation.SuppressLint;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -35,7 +36,7 @@ public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, Fir
 
     ///Configurar adaptador
     @Override
-    protected void onBindViewHolder(@NonNull MiContenedor holder, int position, @NonNull CodigoAveria modelo) {
+    protected void onBindViewHolder(@NonNull MiContenedor holder, @SuppressLint("RecyclerView") int position, @NonNull CodigoAveria modelo) {
         holder.tvCodigo.setText(modelo.getCodigo());
         holder.tvDescripcion.setText("Descripción: " + modelo.getDescripcion());
         holder.tvSolucion.setText("Solución: " + modelo.getSolucion());

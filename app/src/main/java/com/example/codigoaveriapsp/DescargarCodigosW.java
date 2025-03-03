@@ -25,7 +25,7 @@ public class DescargarCodigosW extends Worker{
     public Result doWork() {
         try {
             //Estado: runnable
-            Log.d("WorkManager", "Iniciando descarga de códigos de avería...");
+            Log.d("WorkManager", "Iniciando descarga de códigos de avería");
 
             //Simula que obtiene datos de Firebase
             ref.get().addOnCompleteListener(tarea -> {
