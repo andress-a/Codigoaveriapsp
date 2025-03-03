@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -17,6 +16,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.Constraints;
+import androidx.work.WorkManager;
+
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -59,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Configurar SearchView
         setupSearchView();
+
+        //Metodo que inicia el workmanager
+        iniciarDescargaCódigos();
     }
 
     private void setupSearchView() {
@@ -110,13 +117,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStart() {
         super.onStart();
-        adaptador.startListening(); // Empieza a escuchar cambios en Firebase
+        adaptador.startListening(); //Empieza a escuchar cambios en Firebase
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        adaptador.stopListening(); // Deja de escuchar cambios en Firebase
+        adaptador.stopListening(); //Deja de escuchar cambios en Firebase
     }
 
     @Override
@@ -174,10 +181,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int position = adaptador.getPosicionSeleccionada();
 
         if (item.getItemId() == R.id.eliminar_item) {
-            // Obtenemos la referencia del elemento en Firebase
+            //referencia del elemento en Firebase
             DatabaseReference itemRef = adaptador.getRef(position);
 
-            // Confirmamos la eliminación
+            //Confirma eliminación
             new AlertDialog.Builder(this)
                     .setTitle("Eliminar código")
                     .setMessage("¿Estás seguro de que quieres eliminar este código?")
@@ -199,6 +206,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         return super.onContextItemSelected(item);
+    }
+
+    ///Parte de WorkManager
+    private void iniciarDescargaCódigos() {
+        //Crear restricciones, asegura que haya conexion a internet
+        Constraints restricciones = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        //Configura trabajo único
+        OneTimeWorkRequest solicitudTrabajoUnica =
+                new OneTimeWorkRequest.Builder(DescargarCodigosW.class)
+                        .setConstraints(restricciones)
+                        .build();
+
+        //trabajo que se ejecuta una vez
+        WorkManager.getInstance(this)
+                .enqueue(solicitudTrabajoUnica);
+
+        Log.d("Administrador de trabajos", "Trabajo descarga de codigos programado");
     }
 
 

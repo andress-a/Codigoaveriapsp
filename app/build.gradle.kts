@@ -33,13 +33,15 @@ android {
 }
 
 dependencies {
-    // Import the Firebase BoM
+    //BoM
     implementation(platform(libs.firebase.bom))
-// Firebase UI (Para usar FirebaseRecyclerAdapter)
+//FirebaseRecyclerAdapter
     implementation (libs.firebaseui.firebase.ui.database)
-// RecyclerView (Para mostrar la lista de datos)
+//RecyclerView
     implementation (libs.recyclerview)
-
+//workmanager
+    implementation ("androidx.work:work-runtime:2.7.1")
+//Firebase
     implementation(libs.firebase.analytics)
     implementation(libs.appcompat)
     implementation(libs.material)
