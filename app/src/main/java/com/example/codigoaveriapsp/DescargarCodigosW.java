@@ -24,7 +24,7 @@ public class DescargarCodigosW extends Worker{
     @Override
     public Result doWork() {
         try {
-            //Estado: runnable
+            //runnable
             Log.d("WorkManager", "Iniciando descarga de códigos de avería");
 
             //Simula que obtiene datos de Firebase
@@ -44,7 +44,7 @@ public class DescargarCodigosW extends Worker{
             return Result.success();
 
         } catch (Exception e) {
-            //Estado: Blocked
+            //Blocked
             Log.e("WorkManager", "Error en la descarga", e);
             return Result.retry(); //Estado: Waiting
         }

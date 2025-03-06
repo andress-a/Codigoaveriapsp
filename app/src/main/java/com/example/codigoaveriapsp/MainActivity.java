@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     DatabaseReference ref;
     SearchView searchView;
 
+    //debo modificar la lista a largo plazo para mostrar solo el historial de codigos
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,15 +44,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         vistaRecycler = findViewById(R.id.recyclerView);
         searchView = findViewById(R.id.sView);
         db = FirebaseDatabase.getInstance("https://codigosaveriatfg-default-rtdb.europe-west1.firebasedatabase.app");
+        db.setPersistenceEnabled(true); //guarda datos en cache
         ref = db.getReference("codigos_averia");
 
         //Log para depurar
-        Log.d("FIREBASE_CONFIG", "URL de base de datos: " + db.getReference().toString());
+        Log.d("FIREBASE_CONF", "URL de base de datos: " + db.getReference().toString());
 
-        //Configurar RecyclerView
+        //layout RecyclerView
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
 
-        //Configurar FirebaseRecyclerOptions
+        //inicializa FirebaseRecyclerOptions
         FirebaseRecyclerOptions<CodigoAveria> options =
                 new FirebaseRecyclerOptions.Builder<CodigoAveria>()
                         .setQuery(ref, CodigoAveria.class)
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupSearchView();
 
         //Metodo que inicia el workmanager
-        iniciarDescargaCódigos();
+        iniciarDescargaCodigos();
     }
 
     private void setupSearchView() {
@@ -209,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     ///Parte de WorkManager
-    private void iniciarDescargaCódigos() {
+    private void iniciarDescargaCodigos() {
         //Crear restricciones, asegura que haya conexion a internet
         Constraints restricciones = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
