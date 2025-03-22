@@ -43,6 +43,9 @@ dependencies {
     implementation ("androidx.work:work-runtime:2.7.1")
 //Firebase
     implementation(libs.firebase.analytics)
+    //user auth
+    implementation("com.google.firebase:firebase-auth")
+    //database
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
