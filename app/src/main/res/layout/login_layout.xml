@@ -3,59 +3,67 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="78dp"
-        android:layout_marginEnd="67dp"
-        android:text="ingresar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="parent" />
-
-    <Button
-        android:id="@+id/btnRegistrar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="41dp"
-        android:layout_marginBottom="230dp"
-        android:onClick="click_registrar"
-        android:text="Registrar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnAcceder" />
+    android:layout_height="match_parent"
+    android:background="#121212"
+    tools:context=".LoginActivity">
 
     <EditText
         android:id="@+id/edtEmail"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="83dp"
-        android:layout_marginTop="220dp"
-        android:ems="10"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="100dp"
         android:hint="Email"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#888888"
         android:inputType="textEmailAddress"
+        android:backgroundTint="#0A84FF"
+        android:padding="12dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/edtPassword"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="47dp"
-        android:ems="10"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="24dp"
         android:hint="Contraseña"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#888888"
         android:inputType="textPassword"
-        app:layout_constraintStart_toStartOf="@+id/edtEmail"
-        app:layout_constraintTop_toBottomOf="@+id/edtEmail" />
+        android:backgroundTint="#0A84FF"
+        android:padding="12dp"
+        app:layout_constraintTop_toBottomOf="@id/edtEmail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/btnAcceder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="81dp"
-        android:onClick="click_acceder"
         android:text="Acceder"
-        app:layout_constraintBaseline_toBaselineOf="@+id/btnRegistrar"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#0A84FF"
+        android:onClick="click_acceder"
+        app:layout_constraintTop_toBottomOf="@id/edtPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp" />
+
+    <Button
+        android:id="@+id/btnRegistrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registrar"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#1E1E1E"
+        android:onClick="click_registrar"
+        app:layout_constraintTop_toTopOf="@id/btnAcceder"
+        app:layout_constraintEnd_toStartOf="@id/btnAcceder"
+        android:layout_marginEnd="16dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

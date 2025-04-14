@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_codigos"
+        android:icon="@drawable/list"
+        android:title="Códigos" />
+    <item
+        android:id="@+id/nav_historial"
+        android:icon="@drawable/baseline_history_24"
+        android:title="Historial" />
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@drawable/person"
+        android:title="Perfil" />
+</menu>

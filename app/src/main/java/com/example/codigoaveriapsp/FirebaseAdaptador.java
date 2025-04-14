@@ -41,15 +41,15 @@ public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, Fir
         holder.tvDescripcion.setText("Descripción: " + modelo.getDescripcion());
         holder.tvSolucion.setText("Solución: " + modelo.getSolucion());
 
-        //Guardamos la posición en el ViewHolder
-        holder.position = position;
+        //Guardamos la posición en el ViewHolder | No usar deprecated
+        //holder.position = position;
 
         //Asignar el listener de clics a cada elemento
         holder.itemView.setOnClickListener(v -> escuchador.onClick(v));
 
         //Configurar el listener para el menú contextual
         holder.itemView.setOnLongClickListener(v -> {
-            setPosicionSeleccionada(holder.getAdapterPosition());
+            setPosicionSeleccionada(holder.getBindingAdapterPosition());
             return false;
         });
     }

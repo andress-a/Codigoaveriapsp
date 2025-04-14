@@ -1,9 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Codigoaveriapsp" parent="Theme.Material3.DayNight">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <!-- Tema claro -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#0A84FF</item>
+        <item name="colorPrimaryVariant">#005BB5</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#64B5F6</item>
+        <item name="colorSecondaryVariant">#005CB2</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+
+        <item name="android:windowBackground">#F5F5F5</item>
+        <item name="android:textColor">#212121</item>
+        <item name="cardBackgroundColor">#FFFFFF</item>
+
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:buttonStyle">@style/CustomButton</item>
     </style>
 
-    <style name="Theme.Codigoaveriapsp" parent="Base.Theme.Codigoaveriapsp" />
+    <style name="CustomButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">#0A84FF</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
 </resources>

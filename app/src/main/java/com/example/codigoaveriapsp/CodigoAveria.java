@@ -1,6 +1,8 @@
 package com.example.codigoaveriapsp;
 
-public class CodigoAveria
+import java.io.Serializable;
+
+public class CodigoAveria implements Serializable
 {
     private String codigo;
     private String descripcion;

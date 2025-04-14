@@ -1,7 +1,9 @@
 package com.example.codigoaveriapsp;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.NetworkType;
@@ -22,214 +26,62 @@ import androidx.work.Constraints;
 import androidx.work.WorkManager;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    ///Variables
-    RecyclerView vistaRecycler;
-    FirebaseAdaptador adaptador;
-    FirebaseDatabase db;
-    DatabaseReference ref;
-    SearchView searchView;
+public class MainActivity extends AppCompatActivity {
+    private static final String THEME_PREFS = "theme_preferences";
+    private static final String IS_DARK_MODE = "is_dark_mode";
+    BottomNavigationView bottomNavigationView;
 
-    //debo modificar la lista a largo plazo para mostrar solo el historial de codigos
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Aplicar el tema antes de inflar el layout
+        aplicarTemaGuardado();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ///Inicializacion de variables
-        vistaRecycler = findViewById(R.id.recyclerView);
-        searchView = findViewById(R.id.sView);
-        db = FirebaseDatabase.getInstance("https://codigosaveriatfg-default-rtdb.europe-west1.firebasedatabase.app");
-        db.setPersistenceEnabled(true); //guarda datos en cache
-        ref = db.getReference("codigos_averia");
 
-        //Log para depurar
-        Log.d("FIREBASE_CONF", "URL de base de datos: " + db.getReference().toString());
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        //layout RecyclerView
-        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
+        // Cargar fragmento por defecto
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new CodigosFragment())
+                .commit();
 
-        //inicializa FirebaseRecyclerOptions
-        FirebaseRecyclerOptions<CodigoAveria> options =
-                new FirebaseRecyclerOptions.Builder<CodigoAveria>()
-                        .setQuery(ref, CodigoAveria.class)
-                        .build();
+        // Listener de navegación
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
 
-        //Configurar adaptador con opciones y listener
-        adaptador = new FirebaseAdaptador(options, this);
-        vistaRecycler.setAdapter(adaptador);
-
-        //Configurar SearchView
-        setupSearchView();
-
-        //Metodo que inicia el workmanager
-        iniciarDescargaCodigos();
-    }
-
-    private void setupSearchView() {
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                realizarBusqueda(query);
-                return false;
+            if (item.getItemId() == R.id.nav_codigos) {
+                selectedFragment = new CodigosFragment();
+            } else if (item.getItemId() == R.id.nav_historial) {
+                selectedFragment = new HistorialFragment();
+            } else if (item.getItemId() == R.id.nav_perfil) {
+                selectedFragment = new PerfilFragment();
             }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                realizarBusqueda(newText);
-                return false;
-            }
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, selectedFragment)
+                    .commit();
+
+            return true;
         });
     }
+    private void aplicarTemaGuardado() {
+        SharedPreferences sharedPreferences = getSharedPreferences(THEME_PREFS, Context.MODE_PRIVATE);
+        boolean isDarkMode = sharedPreferences.getBoolean(IS_DARK_MODE, true); // Por defecto modo oscuro
 
-    private void realizarBusqueda(String textoConsulta) {
-        Query consultaFiltrada;
-
-        if (textoConsulta.isEmpty()) {
-            //Si no hay texto de búsqueda, mostrar todos los resultados
-            consultaFiltrada = ref;
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
-            //Buscar por código
-            consultaFiltrada = ref.orderByChild("codigo")
-                    .startAt(textoConsulta)
-                    .endAt(textoConsulta + "\uf8ff");  // Técnica para búsqueda "contiene"
-        }
-
-        //Actualizar opciones del adaptador con la nueva consulta
-        FirebaseRecyclerOptions<CodigoAveria> nuevasOpciones =
-                new FirebaseRecyclerOptions.Builder<CodigoAveria>()
-                        .setQuery(consultaFiltrada, CodigoAveria.class)
-                        .build();
-
-        //Detener escucha actual
-        adaptador.stopListening();
-
-        //Actualizar adaptador con nuevas opciones
-        adaptador = new FirebaseAdaptador(nuevasOpciones, this);
-        vistaRecycler.setAdapter(adaptador);
-
-        //Iniciar escucha con nuevas opciones
-        adaptador.startListening();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        adaptador.startListening(); //Empieza a escuchar cambios en Firebase
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adaptador.stopListening(); //Deja de escuchar cambios en Firebase
-    }
-
-    @Override
-    public void onClick(View v) {
-        //Obtener posicion
-        int position = vistaRecycler.getChildAdapterPosition(v);
-        CodigoAveria codigoAveria = adaptador.getItem(position);
-        Toast.makeText(this, "Seleccionado: " + codigoAveria.getCodigo(), Toast.LENGTH_SHORT).show();
-    }
-
-    //// Menu ////
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.addAveria) {
-            Intent intent = new Intent(MainActivity.this, AddCodigo.class);
-            startActivity(intent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    ///manejar onactivityresult para que el boton cancelar no falle
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                // Se agregó un código, recargar datos
-                adaptador.notifyDataSetChanged();
-            } else if (resultCode == RESULT_CANCELED) {
-                // Se canceló sin cambios, no hacer nada
-            }
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
     }
-
-    ///preiene que falle recyclerview
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (adaptador != null) {
-            adaptador.notifyDataSetChanged();
-        }
-    }
-
-    ///Implementación menu contextual
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        int position = adaptador.getPosicionSeleccionada();
-
-        if (item.getItemId() == R.id.eliminar_item) {
-            //referencia del elemento en Firebase
-            DatabaseReference itemRef = adaptador.getRef(position);
-
-            //Confirma eliminación
-            new AlertDialog.Builder(this)
-                    .setTitle("Eliminar código")
-                    .setMessage("¿Estás seguro de que quieres eliminar este código?")
-                    .setPositiveButton("Sí", (dialog, which) -> {
-                        // Eliminamos el elemento de Firebase
-                        itemRef.removeValue()
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(MainActivity.this, "Código eliminado correctamente", Toast.LENGTH_SHORT).show();
-                                    // No necesitamos notificar cambios ya que FirebaseRecyclerAdapter lo hace automáticamente
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(MainActivity.this, "Error al eliminar: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                });
-                    })
-                    .setNegativeButton("No", null)
-                    .show();
-
-            return true;
-        }
-
-        return super.onContextItemSelected(item);
-    }
-
-    ///Parte de WorkManager
-    private void iniciarDescargaCodigos() {
-        //Crear restricciones, asegura que haya conexion a internet
-        Constraints restricciones = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build();
-
-        //Configura trabajo único
-        OneTimeWorkRequest solicitudTrabajoUnica =
-                new OneTimeWorkRequest.Builder(DescargarCodigosW.class)
-                        .setConstraints(restricciones)
-                        .build();
-
-        //trabajo que se ejecuta una vez
-        WorkManager.getInstance(this)
-                .enqueue(solicitudTrabajoUnica);
-
-        Log.d("Administrador de trabajos", "Trabajo descarga de codigos programado");
-    }
-
-
-
 }
+
