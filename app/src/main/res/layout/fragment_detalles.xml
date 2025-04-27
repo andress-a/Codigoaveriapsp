@@ -59,6 +59,34 @@
                     android:layout_marginBottom="16dp"/>
 
                 <TextView
+                    android:id="@+id/tvMarca"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColor"
+                    android:layout_marginBottom="16dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#30000000"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
+                    android:id="@+id/tvModelo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColor"
+                    android:layout_marginBottom="16dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#30000000"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
                     android:id="@+id/tvSolucion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

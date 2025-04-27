@@ -36,7 +36,7 @@ import java.util.Locale;
 
 public class DetallesFragment extends Fragment {
 
-    private TextView tvCodigo, tvDescripcion, tvSolucion;
+    private TextView tvCodigo, tvDescripcion, tvMarca, tvModelo, tvSolucion;
     private EditText etNota;
     private Button btnGuardarNota, btnVolver;
     private RecyclerView rvNotas;
@@ -79,6 +79,8 @@ public class DetallesFragment extends Fragment {
         // Inicializar las vistas
         tvCodigo = view.findViewById(R.id.tvCodigo);
         tvDescripcion = view.findViewById(R.id.tvDescripcion);
+        tvMarca = view.findViewById(R.id.tvMarca);
+        tvModelo = view.findViewById(R.id.tvModelo);
         tvSolucion = view.findViewById(R.id.tvSolucion);
         etNota = view.findViewById(R.id.etNota);
         btnGuardarNota = view.findViewById(R.id.btnGuardarNota);
@@ -99,6 +101,8 @@ public class DetallesFragment extends Fragment {
             if (codigoActual != null) {
                 // Mostrar la información en los TextViews
                 tvCodigo.setText("Código: " + codigoActual.getCodigo());
+                tvMarca.setText("Marca: " + codigoActual.getMarca());
+                tvModelo.setText("Modelo: " + codigoActual.getModelo());
                 tvDescripcion.setText("Descripción: " + codigoActual.getDescripcion());
                 tvSolucion.setText("Solución: " + codigoActual.getSolucion());
 

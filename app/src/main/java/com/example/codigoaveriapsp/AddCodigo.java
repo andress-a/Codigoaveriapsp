@@ -13,7 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class AddCodigo extends AppCompatActivity {
 
-    private EditText etCodigo, etDescripcion, etSolucion;
+    private EditText etCodigo, etDescripcion, etMarca, etModelo, etSolucion;
     private Button btnGuardar;
     FirebaseDatabase db;
     DatabaseReference ref;
@@ -25,6 +25,8 @@ public class AddCodigo extends AppCompatActivity {
 
         etCodigo = findViewById(R.id.edtCodigo);
         etDescripcion = findViewById(R.id.edtDescripcion);
+        etMarca = findViewById(R.id.edtMarca);
+        etModelo = findViewById(R.id.edtModelo);
         etSolucion = findViewById(R.id.edtSolucion);
         btnGuardar = findViewById(R.id.btnAgregar);
 
@@ -44,16 +46,18 @@ public class AddCodigo extends AppCompatActivity {
     private void guardarCodigo() {
         String codigo = etCodigo.getText().toString().trim();
         String descripcion = etDescripcion.getText().toString().trim();
+        String marca = etMarca.getText().toString().trim();
+        String modelo = etModelo.getText().toString().trim();
         String solucion = etSolucion.getText().toString().trim();
 
-        if (codigo.isEmpty() || descripcion.isEmpty() || solucion.isEmpty()) {
+        if (codigo.isEmpty() || descripcion.isEmpty() || marca.isEmpty() || modelo.isEmpty()  || solucion.isEmpty()) {
             Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
             return;
         }
 
         //Crear objeto y guardar en Firebase
         String id = ref.push().getKey();  //Genera un ID único
-        CodigoAveria nuevoCodigo = new CodigoAveria(codigo, descripcion, solucion);
+        CodigoAveria nuevoCodigo = new CodigoAveria(codigo, descripcion, marca, modelo, solucion);
 
         if (id != null) {
             ref.child(id).setValue(nuevoCodigo)

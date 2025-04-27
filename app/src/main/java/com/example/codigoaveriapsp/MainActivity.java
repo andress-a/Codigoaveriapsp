@@ -50,16 +50,20 @@ public class MainActivity extends AppCompatActivity {
         // Cargar fragmento por defecto
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new CodigosFragment())
+                .replace(R.id.fragment_container, new HomeFragment())
                 .commit();
 
         // Listener de navegación
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
 
-            if (item.getItemId() == R.id.nav_codigos) {
+            if (item.getItemId() == R.id.nav_home) {
+                selectedFragment = new HomeFragment();
+            }
+            else if (item.getItemId() == R.id.nav_codigos) {
                 selectedFragment = new CodigosFragment();
-            } else if (item.getItemId() == R.id.nav_historial) {
+            }
+            else if (item.getItemId() == R.id.nav_historial) {
                 selectedFragment = new HistorialFragment();
             } else if (item.getItemId() == R.id.nav_perfil) {
                 selectedFragment = new PerfilFragment();

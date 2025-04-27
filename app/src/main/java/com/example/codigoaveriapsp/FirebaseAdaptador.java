@@ -39,6 +39,8 @@ public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, Fir
     protected void onBindViewHolder(@NonNull MiContenedor holder, @SuppressLint("RecyclerView") int position, @NonNull CodigoAveria modelo) {
         holder.tvCodigo.setText(modelo.getCodigo());
         holder.tvDescripcion.setText("Descripción: " + modelo.getDescripcion());
+        holder.tvMarca.setText("Marca: " + modelo.getMarca());
+        holder.tvModelo.setText("Modelo: " + modelo.getModelo());
         holder.tvSolucion.setText("Solución: " + modelo.getSolucion());
 
         //Guardamos la posición en el ViewHolder | No usar deprecated
@@ -62,13 +64,15 @@ public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, Fir
     }
     ///ViewHolder para reciclar vista
     public static class MiContenedor extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-        TextView tvCodigo, tvDescripcion, tvSolucion;
+        TextView tvCodigo, tvDescripcion, tvMarca, tvModelo, tvSolucion;
         int position;
 
         public MiContenedor(View itemView) {
             super(itemView);
             tvCodigo = itemView.findViewById(R.id.codigo);
             tvDescripcion = itemView.findViewById(R.id.descripcion);
+            tvMarca = itemView.findViewById(R.id.marca);
+            tvModelo = itemView.findViewById(R.id.modelo);
             tvSolucion = itemView.findViewById(R.id.solucion);
 
             // Asociar el menú contextual al ViewHolder

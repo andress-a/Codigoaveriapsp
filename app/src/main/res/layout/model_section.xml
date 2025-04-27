@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Model Header with Logo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <ImageView
+                android:id="@+id/model_image"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="12dp"
+                android:visibility="visible"
+                android:src="@drawable/ic_car"
+                android:contentDescription="Logo del modelo" />
+
+            <TextView
+                android:id="@+id/model_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Modelo"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                />
+        </LinearLayout>
+
+        <!-- Model RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/model_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="false" />
+
+        <!-- Ver Todos button -->
+        <Button
+            android:id="@+id/btn_ver_todos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp"
+            android:text="Ver todos"
+            android:textAllCaps="false"
+            style="@style/Widget.MaterialComponents.Button.TextButton" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -39,6 +39,26 @@
         android:inputType="text"
         app:layout_constraintStart_toStartOf="@+id/edtCodigo"
         app:layout_constraintTop_toBottomOf="@+id/edtCodigo" />
+    <EditText
+        android:id="@+id/edtMarca"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="38dp"
+        android:ems="10"
+        android:hint="Descripción:"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="@+id/edtCodigo"
+        app:layout_constraintTop_toBottomOf="@+id/edtCodigo" />
+    <EditText
+        android:id="@+id/edtModelo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="38dp"
+        android:ems="10"
+        android:hint="Descripción:"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="@+id/edtCodigo"
+        app:layout_constraintTop_toBottomOf="@+id/edtCodigo" />
 
     <EditText
         android:id="@+id/edtSolucion"

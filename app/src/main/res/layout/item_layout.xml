@@ -31,6 +31,20 @@
             android:textColor="?android:attr/textColor" />
 
         <TextView
+            android:id="@+id/marca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="?android:attr/textColor" />
+
+        <TextView
+            android:id="@+id/modelo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="?android:attr/textColor" />
+
+        <TextView
             android:id="@+id/solucion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
