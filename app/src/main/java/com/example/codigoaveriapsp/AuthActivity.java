@@ -127,7 +127,7 @@ public class AuthActivity extends AppCompatActivity {
             irAMainActivity();
         }
     }
-
+    /*
     // Método para cerrar sesión
     public void cerrarSesion() {
         // Desconectar al usuario de Firebase
@@ -152,7 +152,7 @@ public class AuthActivity extends AppCompatActivity {
                 }
             });
         }
-    }
+    }*/
     private void aplicarTemaGuardado() {
         SharedPreferences sharedPreferences = getSharedPreferences(THEME_PREFS, Context.MODE_PRIVATE);
         boolean isDarkMode = sharedPreferences.getBoolean(IS_DARK_MODE, true); // Por defecto modo oscuro
