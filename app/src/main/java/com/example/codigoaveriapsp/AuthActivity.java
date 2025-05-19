@@ -127,32 +127,6 @@ public class AuthActivity extends AppCompatActivity {
             irAMainActivity();
         }
     }
-    /*
-    // Método para cerrar sesión
-    public void cerrarSesion() {
-        // Desconectar al usuario de Firebase
-        mAuth.signOut();
-
-        // Redirigir a la pantalla de login (por si acaso la sesión se mantiene persistente)
-        Intent intent = new Intent(AuthActivity.this, AuthActivity.class);
-        startActivity(intent);
-        finish();  // Cierra la actividad actual
-    }
-
-    // En caso de que quieras forzar la revalidación del token
-    private void renovarToken() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            user.getIdToken(true).addOnCompleteListener(this, task -> {
-                if (task.isSuccessful()) {
-                    String token = task.getResult().getToken();
-                    Log.d(TAG, "Token renovado: " + token);
-                } else {
-                    Log.w(TAG, "Error al renovar el token: ", task.getException());
-                }
-            });
-        }
-    }*/
     private void aplicarTemaGuardado() {
         SharedPreferences sharedPreferences = getSharedPreferences(THEME_PREFS, Context.MODE_PRIVATE);
         boolean isDarkMode = sharedPreferences.getBoolean(IS_DARK_MODE, true); // Por defecto modo oscuro

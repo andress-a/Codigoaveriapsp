@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -22,14 +23,25 @@ public class HistorialFragment extends Fragment implements View.OnClickListener 
     RecyclerView vistaRecycler;
     FirebaseAdaptador adaptador;
     DatabaseReference ref;
+    FirebaseAuth mAuth;
+    String usuarioActualId;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_historial, container, false);
 
-        ref = FirebaseDatabase.getInstance("https://codigosaveriatfg-default-rtdb.europe-west1.firebasedatabase.app").getReference("historial");
-
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() != null) {
+            usuarioActualId = mAuth.getCurrentUser().getUid();
+            ref = FirebaseDatabase.getInstance("https://codigosaveriatfg-default-rtdb.europe-west1.firebasedatabase.app")
+                    .getReference("usuarios")
+                    .child(usuarioActualId)
+                    .child("historial");
+        } else {
+            Toast.makeText(getContext(), "Inicia sesión para ver tu historial", Toast.LENGTH_SHORT).show();
+            return view;
+        }
         vistaRecycler = view.findViewById(R.id.recyclerViewHistorial);
         vistaRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 

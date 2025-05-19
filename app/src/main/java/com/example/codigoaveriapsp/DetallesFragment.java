@@ -49,6 +49,7 @@ public class DetallesFragment extends Fragment {
     private FirebaseAuth mAuth;
     private String usuarioActualId;
     private CodigoAveria codigoActual;
+    private static final String TAG = "DetallesFragment";
 
     public static DetallesFragment newInstance(CodigoAveria codigoAveria) {
         DetallesFragment fragment = new DetallesFragment();
@@ -65,15 +66,18 @@ public class DetallesFragment extends Fragment {
 
         // Inicializar Firebase
         db = FirebaseDatabase.getInstance("https://codigosaveriatfg-default-rtdb.europe-west1.firebasedatabase.app");
-        notasRef = db.getReference("notas_codigos");
         mAuth = FirebaseAuth.getInstance();
 
         // Verificar que hay un usuario autenticado
         if (mAuth.getCurrentUser() != null) {
             usuarioActualId = mAuth.getCurrentUser().getUid();
+            // Crear referencia específica a las notas del usuario actual
+            notasRef = db.getReference("usuarios").child(usuarioActualId).child("notas");
+            Log.d(TAG, "Usuario autenticado: " + usuarioActualId);
         } else {
-            // Si no hay usuario autenticado, mostrar mensaje
+            // Si no hay usuario autenticado, mostrar mensaje y deshabilitar funcionalidad
             Toast.makeText(getContext(), "Debes iniciar sesión para ver y añadir notas", Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "No hay usuario autenticado");
         }
 
         // Inicializar las vistas
@@ -109,6 +113,12 @@ public class DetallesFragment extends Fragment {
                 // Cargar las notas existentes si hay usuario autenticado
                 if (usuarioActualId != null) {
                     cargarNotas(codigoActual.getCodigo());
+                } else {
+                    // Si no hay usuario, mostrar mensaje y deshabilitar entrada de notas
+                    tvNoNotasMsg.setVisibility(View.VISIBLE);
+                    tvNoNotasMsg.setText("Inicia sesión para ver y añadir notas");
+                    etNota.setEnabled(false);
+                    btnGuardarNota.setEnabled(false);
                 }
             }
         }
@@ -131,20 +141,26 @@ public class DetallesFragment extends Fragment {
     }
 
     private void cargarNotas(String codigoAveria) {
+        if (notasRef == null) {
+            Log.e(TAG, "Error: notasRef es null");
+            return;
+        }
+
         // Consulta para obtener las notas del usuario para este código específico
-        Query consultaNotas = notasRef
-                .orderByChild("usuarioId_codigoAveria")
-                .equalTo(usuarioActualId + "_" + codigoAveria);
+        Query consultaNotas = notasRef.orderByChild("codigoAveria").equalTo(codigoAveria);
 
         consultaNotas.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listaNotas.clear();
+                Log.d(TAG, "Número de notas encontradas: " + dataSnapshot.getChildrenCount());
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Nota nota = snapshot.getValue(Nota.class);
                     if (nota != null) {
                         nota.setId(snapshot.getKey());
                         listaNotas.add(nota);
+                        Log.d(TAG, "Nota cargada: " + nota.getContenido());
                     }
                 }
 
@@ -156,6 +172,7 @@ public class DetallesFragment extends Fragment {
                 // Mostrar mensaje si no hay notas
                 if (listaNotas.isEmpty()) {
                     tvNoNotasMsg.setVisibility(View.VISIBLE);
+                    tvNoNotasMsg.setText("No hay notas para este código de avería");
                 } else {
                     tvNoNotasMsg.setVisibility(View.GONE);
                 }
@@ -163,7 +180,7 @@ public class DetallesFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("DetallesFragment", "Error al cargar notas: " + databaseError.getMessage());
+                Log.e(TAG, "Error al cargar notas: " + databaseError.getMessage());
                 Toast.makeText(getContext(), "Error al cargar notas", Toast.LENGTH_SHORT).show();
             }
         });
@@ -182,6 +199,12 @@ public class DetallesFragment extends Fragment {
             return;
         }
 
+        if (notasRef == null) {
+            Log.e(TAG, "Error: notasRef es null");
+            Toast.makeText(getContext(), "Error: No se pudo acceder a la base de datos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Crear nueva nota
         Nota nuevaNota = new Nota();
         nuevaNota.setUsuarioId(usuarioActualId);
@@ -189,21 +212,22 @@ public class DetallesFragment extends Fragment {
         nuevaNota.setContenido(contenidoNota);
         nuevaNota.setTimestamp(System.currentTimeMillis());
 
-        // Añadir un campo compuesto para consultas más eficientes
-        nuevaNota.setUsuarioId_codigoAveria(usuarioActualId + "_" + codigoActual.getCodigo());
+        // Ya no necesitamos el campo compuesto, ya que ahora las notas se guardan bajo el nodo del usuario
+        // nuevaNota.setUsuarioId_codigoAveria(usuarioActualId + "_" + codigoActual.getCodigo());
 
-        // Guardar en Firebase
+        // Guardar en Firebase bajo el nodo del usuario actual
         DatabaseReference nuevaNotaRef = notasRef.push();
         nuevaNotaRef.setValue(nuevaNota)
                 .addOnSuccessListener(aVoid -> {
                     // Limpiar el campo de texto
                     etNota.setText("");
                     Toast.makeText(getContext(), "Nota guardada correctamente", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Nota guardada con ID: " + nuevaNotaRef.getKey());
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(getContext(), "Error al guardar la nota: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
-                    Log.e("DetallesFragment", "Error al guardar nota", e);
+                    Log.e(TAG, "Error al guardar nota", e);
                 });
     }
 
@@ -257,22 +281,30 @@ public class DetallesFragment extends Fragment {
     }
 
     private void eliminarNota(String notaId, int position) {
+        // Verificar que notasRef no sea null
+        if (notasRef == null) {
+            Log.e(TAG, "Error: notasRef es null");
+            Toast.makeText(getContext(), "Error: No se pudo acceder a la base de datos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Mostrar diálogo de confirmación
         new AlertDialog.Builder(requireContext())
                 .setTitle("Eliminar nota")
                 .setMessage("¿Estás seguro de que quieres eliminar esta nota?")
                 .setPositiveButton("Eliminar", (dialog, which) -> {
-                    // Eliminar de Firebase
+                    // Eliminar de Firebase desde el nodo del usuario
                     notasRef.child(notaId).removeValue()
                             .addOnSuccessListener(aVoid -> {
                                 // La nota ya se eliminará automáticamente de la lista
                                 // gracias al ValueEventListener en cargarNotas()
                                 Toast.makeText(getContext(), "Nota eliminada", Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "Nota eliminada con ID: " + notaId);
                             })
                             .addOnFailureListener(e -> {
                                 Toast.makeText(getContext(), "Error al eliminar la nota",
                                         Toast.LENGTH_SHORT).show();
-                                Log.e("DetallesFragment", "Error al eliminar nota", e);
+                                Log.e(TAG, "Error al eliminar nota", e);
                             });
                 })
                 .setNegativeButton("Cancelar", null)

@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +36,8 @@ public class CodigosFragment extends Fragment implements View.OnClickListener {
     FirebaseDatabase db;
     DatabaseReference ref;
     SearchView searchView;
+    FirebaseAuth mAuth;
+    String usuarioActualId;
     private static final String TAG = "CodigosFragment";
 
     @Nullable
@@ -44,6 +47,14 @@ public class CodigosFragment extends Fragment implements View.OnClickListener {
 
         db = FirebaseDatabase.getInstance("https://codigosaveriatfg-default-rtdb.europe-west1.firebasedatabase.app");
         ref = db.getReference("codigos_averia");
+        mAuth = FirebaseAuth.getInstance();
+
+        if (mAuth.getCurrentUser() != null) {
+            usuarioActualId = mAuth.getCurrentUser().getUid();
+            Log.d(TAG, "Usuario autenticado: " + usuarioActualId);
+        } else {
+            Toast.makeText(getContext(), "Debes iniciar sesión para usar la aplicación", Toast.LENGTH_SHORT).show();
+        }
 
         vistaRecycler = view.findViewById(R.id.recyclerView);
         searchView = view.findViewById(R.id.sView);
@@ -100,42 +111,40 @@ public class CodigosFragment extends Fragment implements View.OnClickListener {
     }
 
     private void guardarEnHistorial(String codigo) {
-        DatabaseReference historialRef = db.getReference("historial");
+        if (usuarioActualId == null) return;
 
-        // Primero, verificamos si el código existe en la base de datos de códigos de avería
+        DatabaseReference historialRef = db.getReference("usuarios").child(usuarioActualId).child("historial");
+
         ref.orderByChild("codigo").equalTo(codigo).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // El código existe, obtenemos la información completa
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         CodigoAveria codigoAveria = snapshot.getValue(CodigoAveria.class);
                         if (codigoAveria != null) {
-                            // Ahora verificamos si ya existe en el historial
                             historialRef.orderByChild("codigo").equalTo(codigo).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot historialSnapshot) {
                                     if (!historialSnapshot.exists()) {
-                                        // Si no existe, lo agregamos al historial
                                         historialRef.push().setValue(codigoAveria);
                                         Toast.makeText(getContext(), "Código añadido al historial: " + codigo, Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
                                 @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    Log.e(TAG, "Error al verificar historial: " + databaseError.getMessage());
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e(TAG, "Error al verificar historial: " + error.getMessage());
                                 }
                             });
-                            break; // Solo necesitamos un resultado
+                            break;
                         }
                     }
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "Error al verificar código: " + databaseError.getMessage());
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al buscar el código: " + error.getMessage());
             }
         });
     }
@@ -162,22 +171,22 @@ public class CodigosFragment extends Fragment implements View.OnClickListener {
     }
 
     private void guardarCodigoAveria(CodigoAveria codigoAveria) {
-        DatabaseReference historialRef = db.getReference("historial");
+        if (usuarioActualId == null) return;
 
-        // Verificar si ya existe en el historial
+        DatabaseReference historialRef = db.getReference("usuarios").child(usuarioActualId).child("historial");
+
         historialRef.orderByChild("codigo").equalTo(codigoAveria.getCodigo()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
-                    // Si no existe, lo agregamos al historial
                     historialRef.push().setValue(codigoAveria);
                     Toast.makeText(getContext(), "Código añadido al historial: " + codigoAveria.getCodigo(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "Error al acceder al historial: " + databaseError.getMessage());
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al acceder al historial: " + error.getMessage());
             }
         });
     }

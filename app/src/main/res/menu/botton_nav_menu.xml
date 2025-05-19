@@ -2,7 +2,7 @@
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
-        android:title="Códigos" />
+        android:title="Inicio" />
     <item
         android:id="@+id/nav_codigos"
         android:icon="@drawable/list"
