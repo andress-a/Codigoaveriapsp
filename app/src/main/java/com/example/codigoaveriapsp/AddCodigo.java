@@ -37,7 +37,7 @@ public class AddCodigo extends AppCompatActivity {
     }
 
     public void clickCancelar(View view) {
-            setResult(RESULT_CANCELED); // Indica que no se agregó nada
+            setResult(RESULT_CANCELED); // aqui tenia un error asi que con esto lo majeo
             finish();
     }
     public void clickAdd(View view) {

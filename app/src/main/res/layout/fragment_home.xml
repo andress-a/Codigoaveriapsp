@@ -15,9 +15,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_height="191dp"
             android:background="@drawable/header_gradient"
+            android:orientation="vertical"
             android:padding="24dp">
 
             <!-- App Logo -->
@@ -27,44 +27,33 @@
                 android:id="@+id/welcome_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:alpha="0.9"
                 android:text="Bienvenido a"
-                android:textSize="18sp"
                 android:textColor="@android:color/white"
-                android:alpha="0.9"/>
+                android:textSize="18sp" />
+
+            <!-- Short app description -->
 
             <TextView
                 android:id="@+id/app_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Carfix Upkeep"
+                android:textColor="@android:color/white"
                 android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"/>
+                android:textStyle="bold" />
 
-            <!-- Short app description -->
             <TextView
                 android:id="@+id/app_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tu compañero para diagnóstico automotriz"
-                android:textSize="14sp"
-                android:textColor="@android:color/white"
+                android:layout_marginTop="8dp"
                 android:alpha="0.8"
-                android:layout_marginTop="8dp"/>
+                android:text="Tu compañero para diagnóstico automotriz"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
 
             <!-- Quick action button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_scan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Escanear ahora"
-                android:textAllCaps="false"
-                app:cornerRadius="24dp"
-                android:layout_marginTop="16dp"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
-                app:icon="@drawable/ic_delete"
-                app:iconGravity="textStart"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
