@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
@@ -68,7 +69,17 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
                 .setQuery(ref, CodigoAveria.class)
                 .build();
 
+        // Usar el constructor original
         adaptador = new FirebaseAdaptador(options, this);
+        // Asignar el listener de long click para eliminar (solo si es admin)
+        adaptador.setOnItemLongClickListener((position, codigoAveria) -> {
+            if (isAdmin) {
+                mostrarDialogoEliminar(codigoAveria);
+            } else {
+                Toast.makeText(getContext(), "Solo los administradores pueden eliminar códigos", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         vistaRecycler.setAdapter(adaptador);
         adaptador.startListening();
 
@@ -77,6 +88,8 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
 
         return view;
     }
+
+
     //Verificar si es admin o usuario normal
     private void comprobarRol() {
         if (usuarioActualId != null) {
@@ -114,6 +127,34 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
                 Toast.makeText(getContext(), "Solo los administradores pueden añadir códigos", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    //Mostrar diálogo de confirmación para eliminar
+    private void mostrarDialogoEliminar(CodigoAveria codigoAveria) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Eliminar Código")
+                .setMessage("¿Estás seguro de que quieres eliminar el código: " + codigoAveria.getCodigo() + "?")
+                .setPositiveButton("Eliminar", (dialog, which) -> {
+                    eliminarCodigo(codigoAveria);
+                })
+                .setNegativeButton("Cancelar", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .create()
+                .show();
+    }
+
+    //Eliminar código de la base de datos
+    private void eliminarCodigo(CodigoAveria codigoAveria) {
+        ref.child(codigoAveria.getCodigo()).removeValue()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getContext(), "Código eliminado correctamente", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Código eliminado: " + codigoAveria.getCodigo());
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Error al eliminar el código: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Error al eliminar código", e);
+                });
     }
     //Mostrar el diálogo para añadir un nuevo código
     private void mostrarDialogoAddCodigo() {

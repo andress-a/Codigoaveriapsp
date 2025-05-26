@@ -19,8 +19,16 @@ import com.google.firebase.database.DatabaseReference;
 public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, FirebaseAdaptador.MiContenedor> {
     ///Variables
     private View.OnClickListener escuchador;
+    private OnItemLongClickListener longClickListener;
     private int posicionSeleccionada;
 
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        this.longClickListener = listener;
+    }
+    // Interface para manejar el click largo
+    public interface OnItemLongClickListener {
+        void onItemLongClick(int position, CodigoAveria item);
+    }
     public FirebaseAdaptador(@NonNull FirebaseRecyclerOptions<CodigoAveria> options, View.OnClickListener escuchador) {
         super(options);
         this.escuchador = escuchador;
@@ -47,12 +55,23 @@ public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, Fir
         //holder.position = position;
 
         //Asignar el listener de clics a cada elemento
-        holder.itemView.setOnClickListener(v -> escuchador.onClick(v));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                escuchador.onClick(v);
+            }
+        });
 
-        //Configurar el listener para el menú contextual
-        holder.itemView.setOnLongClickListener(v -> {
-            setPosicionSeleccionada(holder.getBindingAdapterPosition());
-            return false;
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                int posicion = holder.getAdapterPosition();
+                if (posicion != RecyclerView.NO_POSITION && longClickListener != null) {
+                    longClickListener.onItemLongClick(posicion, getItem(posicion));
+                    return true;
+                }
+                return false;
+            }
         });
     }
 
@@ -62,6 +81,7 @@ public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, Fir
         View vista = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout, parent, false);
         return new MiContenedor(vista);
     }
+
     ///ViewHolder para reciclar vista
     public static class MiContenedor extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         TextView tvCodigo, tvDescripcion, tvMarca, tvModelo, tvSolucion;
@@ -84,8 +104,6 @@ public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, Fir
             MenuInflater inflater = new MenuInflater(view.getContext());
             inflater.inflate(R.menu.menu_contextual, contextMenu);
         }
-
-
     }
 }
 

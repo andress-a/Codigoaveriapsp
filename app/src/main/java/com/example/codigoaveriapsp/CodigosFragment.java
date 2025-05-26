@@ -25,7 +25,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class CodigosFragment extends Fragment implements View.OnClickListener {
-    //inicializo variables esta es la parte del usuario normal(mecanico)
+    //inicializo variables esta es la parte del usuario normal
     RecyclerView vistaRecycler;
     FirebaseAdaptador adaptador;
     FirebaseDatabase db;
