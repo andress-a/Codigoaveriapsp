@@ -37,13 +37,13 @@ public class HomeFragment extends Fragment {
 
     private FirebaseDatabase db;
     private DatabaseReference ref;
-    private TextView welcomeText;
+    private TextView bienvenidatxt;
     private FirebaseAuth mAuth;
     private Map<String, RecyclerView> modelRecyclerViews = new HashMap<>();
-    private Map<String, ModelAdapter> modelAdapters = new HashMap<>();
+    private Map<String, ModeloAdapter> modelAdapters = new HashMap<>();
     private static final String TAG = "HomeFragment";
 
-    // Marcas destacadas que sí existen en Firebase
+    //marcas que tengo en FireBase
     private final String[] modelosDestacados = {"Ford", "Opel", "Citroën", "Mercedes"};
 
     @Nullable
@@ -55,34 +55,34 @@ public class HomeFragment extends Fragment {
         ref = db.getReference("codigos_averia");
         mAuth = FirebaseAuth.getInstance();
 
-        welcomeText = view.findViewById(R.id.welcome_text);
-        setWelcomeMessage();
+        bienvenidatxt = view.findViewById(R.id.welcome_text);
+        setBienvenida();
 
         LinearLayout modelsContainer = view.findViewById(R.id.models_container);
 
         for (String modelo : modelosDestacados) {
-            createModelSection(modelsContainer, modelo);
-            loadModelData(modelo);
+            seccionModelo(modelsContainer, modelo);
+            cargarDatos(modelo);
         }
 
         return view;
     }
 
-    private void setWelcomeMessage() {
+    private void setBienvenida() {
         Calendar calendar = Calendar.getInstance();
-        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        int hora = calendar.get(Calendar.HOUR_OF_DAY);
 
-        String greeting;
-        if (hourOfDay < 12) {
-            greeting = "Buenos días";
-        } else if (hourOfDay < 20) {
-            greeting = "Buenas tardes";
+        String saludo;
+        if (hora < 12) {
+            saludo = "Buenos días";
+        } else if (hora < 20) {
+            saludo = "Buenas tardes";
         } else {
-            greeting = "Buenas noches";
+            saludo = "Buenas noches";
         }
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        String userEmail = currentUser != null ? currentUser.getEmail() : "";
+        FirebaseUser usuarioActual = mAuth.getCurrentUser();
+        String userEmail = usuarioActual != null ? usuarioActual.getEmail() : "";
         String username = "";
 
         if (userEmail != null && !userEmail.isEmpty()) {
@@ -90,58 +90,61 @@ public class HomeFragment extends Fragment {
             username = username.substring(0, 1).toUpperCase() + username.substring(1);
         }
 
-        welcomeText.setText(greeting + ", " + username + "\nBienvenido a la App de Códigos OBD2");
+        bienvenidatxt.setText(saludo + ", " + username + "\nBienvenido a la App de Códigos OBD2");
     }
 
-    private void createModelSection(LinearLayout container, String model) {
-        View modelSection = getLayoutInflater().inflate(R.layout.model_section, container, false);
+    private void seccionModelo(LinearLayout container, String model) {
+        View seccionModelo = getLayoutInflater().inflate(R.layout.model_section, container, false);
 
-        TextView modelTitle = modelSection.findViewById(R.id.model_title);
-        modelTitle.setText(model);
+        TextView tituloModelo = seccionModelo.findViewById(R.id.model_title);
+        tituloModelo.setText(model);
 
-        ImageView modelImage = modelSection.findViewById(R.id.model_image);
+        ImageView imagenModelo = seccionModelo.findViewById(R.id.model_image);
         int resourceId = getResources().getIdentifier(
                 "logo_" + model.toLowerCase(), "drawable", requireActivity().getPackageName());
 
         if (resourceId != 0) {
-            modelImage.setImageResource(resourceId);
-            modelImage.setVisibility(View.VISIBLE);
+            imagenModelo.setImageResource(resourceId);
+            imagenModelo.setVisibility(View.VISIBLE);
         } else {
-            modelImage.setVisibility(View.GONE);
+            imagenModelo.setVisibility(View.GONE);
         }
 
-        RecyclerView recyclerView = modelSection.findViewById(R.id.model_recycler_view);
+        RecyclerView recyclerView = seccionModelo.findViewById(R.id.model_recycler_view);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(layoutManager);
 
-        ModelAdapter adapter = new ModelAdapter();
+        ModeloAdapter adapter = new ModeloAdapter();
         recyclerView.setAdapter(adapter);
 
         modelRecyclerViews.put(model, recyclerView);
         modelAdapters.put(model, adapter);
 
-        Button verTodosBtn = modelSection.findViewById(R.id.btn_ver_todos);
-        verTodosBtn.setOnClickListener(v -> {
-            Bundle args = new Bundle();
-            args.putString("marca", model);
+        Button verTodosBtn = seccionModelo.findViewById(R.id.btn_ver_todos);
+        verTodosBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString("marca", model);
 
-            CodigosFragment codigosFragment = new CodigosFragment();
-            codigosFragment.setArguments(args);
+                CodigosFragment codigosFragment = new CodigosFragment();
+                codigosFragment.setArguments(args);
 
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, codigosFragment)
-                    .addToBackStack(null)
-                    .commit();
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, codigosFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
         });
 
-        container.addView(modelSection);
+        container.addView(seccionModelo);
     }
 
-    private void loadModelData(String model) {
-        // Filtrar por "marca" correctamente
-        Query modelQuery = ref.orderByChild("marca").equalTo(model).limitToFirst(8);
+    private void cargarDatos(String model) {
+    //Filtrar por marcar
+        Query querymod = ref.orderByChild("marca").equalTo(model).limitToFirst(8);
 
-        modelQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        querymod.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<CodigoAveria> codigosList = new ArrayList<>();
@@ -155,7 +158,7 @@ public class HomeFragment extends Fragment {
 
                 // Actualizar adapter solo si hay datos
                 if (modelAdapters.containsKey(model)) {
-                    ModelAdapter adapter = modelAdapters.get(model);
+                    ModeloAdapter adapter = modelAdapters.get(model);
                     adapter.setCodigos(codigosList);
                     adapter.notifyDataSetChanged();
                 }
@@ -168,7 +171,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.CodigoViewHolder> {
+    private class ModeloAdapter extends RecyclerView.Adapter<ModeloAdapter.CodigoViewHolder> {
         private List<CodigoAveria> codigos = new ArrayList<>();
 
         public void setCodigos(List<CodigoAveria> codigos) {

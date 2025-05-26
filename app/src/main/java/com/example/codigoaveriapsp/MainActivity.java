@@ -19,20 +19,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Aplicar el tema antes de inflar el layout
+        //Aplicar el tema antes de inflar el layout
         aplicarTemaGuardado();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        // Cargar fragmento por defecto
+        //Cargar fragmento por defecto
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, new HomeFragment())
                 .commit();
 
-        // Listener de navegación
+        //Listener de navegación
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
 

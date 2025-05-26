@@ -18,7 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 
 public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, FirebaseAdaptador.MiContenedor> {
     ///Variables
-    private View.OnClickListener escuchador; // Listener para clics en elementos
+    private View.OnClickListener escuchador;
     private int posicionSeleccionada;
 
     public FirebaseAdaptador(@NonNull FirebaseRecyclerOptions<CodigoAveria> options, View.OnClickListener escuchador) {
@@ -75,7 +75,7 @@ public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, Fir
             tvModelo = itemView.findViewById(R.id.modelo);
             tvSolucion = itemView.findViewById(R.id.solucion);
 
-            // Asociar el menú contextual al ViewHolder
+            //Asociar el menú contextual al ViewHolder
             itemView.setOnCreateContextMenuListener(this);
         }
         ///infla menu contextual

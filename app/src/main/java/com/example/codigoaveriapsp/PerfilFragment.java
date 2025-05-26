@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,40 +41,45 @@ public class PerfilFragment extends Fragment {
             correo.setText("Correo: " + usuario.getEmail());
         }
 
-        cerrarSesion.setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(getContext(), AuthActivity.class));
-            requireActivity().finish();
+        cerrarSesion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getContext(), AuthActivity.class));
+                requireActivity().finish();
+            }
         });
 
-        // Configurar el switch del tema
+        //Configurar el switch del tema
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(THEME_PREFS, Context.MODE_PRIVATE);
         boolean isDarkMode = sharedPreferences.getBoolean(IS_DARK_MODE, true); // Por defecto modo oscuro
 
-        // Establecer el estado del switch basado en la preferencia guardada
+        //Establecer el estado del switch basado en la preferencia guardada
         switchTema.setChecked(isDarkMode);
 
-        // Cambiar el tema cuando se active/desactive el switch
-        switchTema.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Guardar la preferencia
-            sharedPreferences.edit().putBoolean(IS_DARK_MODE, isChecked).apply();
+        //Cambiar el tema
+        switchTema.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //Guardar preferencia
+                sharedPreferences.edit().putBoolean(IS_DARK_MODE, isChecked).apply();
 
-            // Aplicar el tema
-            aplicarTema(isChecked);
+                //Aplicar tema
+                aplicarTema(isChecked);
+            }
         });
 
         return view;
     }
 
     private void aplicarTema(boolean isDarkMode) {
-        // Aplicar el tema correcto
         if (isDarkMode) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
-        // Recrear la actividad para aplicar los cambios
+        //aplicar los cambios
         requireActivity().recreate();
     }
 }

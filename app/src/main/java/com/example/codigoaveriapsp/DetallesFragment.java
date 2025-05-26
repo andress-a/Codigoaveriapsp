@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,7 +52,7 @@ public class DetallesFragment extends Fragment {
     private String usuarioActualId;
     private CodigoAveria codigoActual;
     private static final String TAG = "DetallesFragment";
-
+    //esto es para que accedan facilmente
     public static DetallesFragment newInstance(CodigoAveria codigoAveria) {
         DetallesFragment fragment = new DetallesFragment();
         Bundle args = new Bundle();
@@ -64,23 +66,22 @@ public class DetallesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detalles, container, false);
 
-        // Inicializar Firebase
+        //Inicializar Firebase
         db = FirebaseDatabase.getInstance("https://codigosaveriatfg-default-rtdb.europe-west1.firebasedatabase.app");
         mAuth = FirebaseAuth.getInstance();
 
-        // Verificar que hay un usuario autenticado
+        //Verificar que hay un usuario autenticado
         if (mAuth.getCurrentUser() != null) {
             usuarioActualId = mAuth.getCurrentUser().getUid();
             // Crear referencia específica a las notas del usuario actual
             notasRef = db.getReference("usuarios").child(usuarioActualId).child("notas");
             Log.d(TAG, "Usuario autenticado: " + usuarioActualId);
         } else {
-            // Si no hay usuario autenticado, mostrar mensaje y deshabilitar funcionalidad
+            //Si no hay usuario autenticado, mostrar mensaje y deshabilitar funcionalidad
             Toast.makeText(getContext(), "Debes iniciar sesión para ver y añadir notas", Toast.LENGTH_SHORT).show();
             Log.w(TAG, "No hay usuario autenticado");
         }
 
-        // Inicializar las vistas
         tvCodigo = view.findViewById(R.id.tvCodigo);
         tvDescripcion = view.findViewById(R.id.tvDescripcion);
         tvMarca = view.findViewById(R.id.tvMarca);
@@ -92,29 +93,28 @@ public class DetallesFragment extends Fragment {
         rvNotas = view.findViewById(R.id.rvNotas);
         tvNoNotasMsg = view.findViewById(R.id.tvNoNotasMsg);
 
-        // Configurar RecyclerView
+        //Configurar RecyclerView
         listaNotas = new ArrayList<>();
         notasAdapter = new NotasAdapter(listaNotas);
         rvNotas.setLayoutManager(new LinearLayoutManager(getContext()));
         rvNotas.setAdapter(notasAdapter);
 
-        // Obtener los datos del código de avería
+        //Obtener los datos de la colección código de avería
         if (getArguments() != null) {
             codigoActual = (CodigoAveria) getArguments().getSerializable("codigoAveria");
 
             if (codigoActual != null) {
-                // Mostrar la información en los TextViews
                 tvCodigo.setText("Código: " + codigoActual.getCodigo());
                 tvMarca.setText("Marca: " + codigoActual.getMarca());
                 tvModelo.setText("Modelo: " + codigoActual.getModelo());
                 tvDescripcion.setText("Descripción: " + codigoActual.getDescripcion());
                 tvSolucion.setText("Solución: " + codigoActual.getSolucion());
 
-                // Cargar las notas existentes si hay usuario autenticado
+                //Cargar las notas existentes si se ha iniciado sesión
                 if (usuarioActualId != null) {
                     cargarNotas(codigoActual.getCodigo());
                 } else {
-                    // Si no hay usuario, mostrar mensaje y deshabilitar entrada de notas
+                    //Sino, mostrar mensaje y deshabilitar entrada de notas
                     tvNoNotasMsg.setVisibility(View.VISIBLE);
                     tvNoNotasMsg.setText("Inicia sesión para ver y añadir notas");
                     etNota.setEnabled(false);
@@ -123,19 +123,27 @@ public class DetallesFragment extends Fragment {
             }
         }
 
-        // Configurar el botón para guardar notas
-        btnGuardarNota.setOnClickListener(v -> {
-            if (usuarioActualId != null) {
-                guardarNota();
-            } else {
-                Toast.makeText(getContext(), "Debes iniciar sesión para añadir notas", Toast.LENGTH_SHORT).show();
+        //Configurar el botón para guardar notas
+        btnGuardarNota.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (usuarioActualId != null) {
+                    guardarNota();
+                } else {
+                    Toast.makeText(getContext(), "Debes iniciar sesión para añadir notas", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        // Configurar el botón volver
-        btnVolver.setOnClickListener(v -> {
-            getParentFragmentManager().popBackStack();
+
+        //Configurar el botón volver
+        btnVolver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getParentFragmentManager().popBackStack();
+            }
         });
+
 
         return view;
     }
@@ -146,7 +154,7 @@ public class DetallesFragment extends Fragment {
             return;
         }
 
-        // Consulta para obtener las notas del usuario para este código específico
+        //Consulta para obtener las notas del usuario segun codigo
         Query consultaNotas = notasRef.orderByChild("codigoAveria").equalTo(codigoAveria);
 
         consultaNotas.addValueEventListener(new ValueEventListener() {
@@ -164,12 +172,12 @@ public class DetallesFragment extends Fragment {
                     }
                 }
 
-                // Ordenar notas por timestamp (más recientes primero)
+                //Ordenar notas por timestamp
                 Collections.sort(listaNotas, (n1, n2) -> Long.compare(n2.getTimestamp(), n1.getTimestamp()));
 
                 notasAdapter.notifyDataSetChanged();
 
-                // Mostrar mensaje si no hay notas
+                //Mostrar mensaje si no hay notas
                 if (listaNotas.isEmpty()) {
                     tvNoNotasMsg.setVisibility(View.VISIBLE);
                     tvNoNotasMsg.setText("No hay notas para este código de avería");
@@ -205,33 +213,37 @@ public class DetallesFragment extends Fragment {
             return;
         }
 
-        // Crear nueva nota
+        //Crear nueva nota
         Nota nuevaNota = new Nota();
         nuevaNota.setUsuarioId(usuarioActualId);
         nuevaNota.setCodigoAveria(codigoActual.getCodigo());
         nuevaNota.setContenido(contenidoNota);
         nuevaNota.setTimestamp(System.currentTimeMillis());
 
-        // Ya no necesitamos el campo compuesto, ya que ahora las notas se guardan bajo el nodo del usuario
-        // nuevaNota.setUsuarioId_codigoAveria(usuarioActualId + "_" + codigoActual.getCodigo());
-
-        // Guardar en Firebase bajo el nodo del usuario actual
+        //Guardar en Firebase bajo el nodo del usuario actual
         DatabaseReference nuevaNotaRef = notasRef.push();
         nuevaNotaRef.setValue(nuevaNota)
-                .addOnSuccessListener(aVoid -> {
-                    // Limpiar el campo de texto
-                    etNota.setText("");
-                    Toast.makeText(getContext(), "Nota guardada correctamente", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "Nota guardada con ID: " + nuevaNotaRef.getKey());
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //Limpiar el campo de texto
+                        etNota.setText("");
+                        Toast.makeText(getContext(), "Nota guardada correctamente", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "Nota guardada con ID: " + nuevaNotaRef.getKey());
+                    }
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Error al guardar la nota: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Error al guardar nota", e);
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(getContext(), "Error al guardar la nota: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Error al guardar nota", e);
+                    }
                 });
+
     }
 
-    // Adaptador para las notas
+    //Adaptador para las notas
     private class NotasAdapter extends RecyclerView.Adapter<NotasAdapter.NotaViewHolder> {
 
         private List<Nota> notas;
@@ -253,12 +265,12 @@ public class DetallesFragment extends Fragment {
             Nota nota = notas.get(position);
             holder.tvContenidoNota.setText(nota.getContenido());
 
-            // Formatear la fecha
+            //Formatear la fecha
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
             String fechaFormateada = sdf.format(new Date(nota.getTimestamp()));
             holder.tvFechaNota.setText(fechaFormateada);
 
-            // Configurar botón de eliminar
+            //Configurar botón de eliminar
             holder.btnEliminarNota.setOnClickListener(v -> eliminarNota(nota.getId(), position));
         }
 
@@ -281,14 +293,14 @@ public class DetallesFragment extends Fragment {
     }
 
     private void eliminarNota(String notaId, int position) {
-        // Verificar que notasRef no sea null
+        //Verificar que notasRef no sea null
         if (notasRef == null) {
             Log.e(TAG, "Error: notasRef es null");
             Toast.makeText(getContext(), "Error: No se pudo acceder a la base de datos", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Mostrar diálogo de confirmación
+        //diálogo de confirmación
         new AlertDialog.Builder(requireContext())
                 .setTitle("Eliminar nota")
                 .setMessage("¿Estás seguro de que quieres eliminar esta nota?")

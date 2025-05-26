@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -54,11 +55,18 @@ public class HistorialFragment extends Fragment implements View.OnClickListener 
         adaptador.startListening();
 
         Button borrarHistorial = view.findViewById(R.id.btnBorrarHistorial);
-        borrarHistorial.setOnClickListener(v -> {
-            ref.removeValue().addOnSuccessListener(aVoid -> {
-                Toast.makeText(getContext(), "Historial borrado", Toast.LENGTH_SHORT).show();
-            });
+        borrarHistorial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ref.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getContext(), "Historial borrado", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         });
+
 
         return view;
     }
@@ -67,13 +75,11 @@ public class HistorialFragment extends Fragment implements View.OnClickListener 
     public void onClick(View v) {
         int pos = vistaRecycler.getChildAdapterPosition(v);
         CodigoAveria cod = adaptador.getItem(pos);
-
-        // Mostrar los detalles del código seleccionado
         mostrarDetalles(cod);
     }
 
     private void mostrarDetalles(CodigoAveria codigoAveria) {
-        // Crear y mostrar el fragmento de detalles
+        //lanza fragmento de detalles
         DetallesFragment detallesFragment = DetallesFragment.newInstance(codigoAveria);
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, detallesFragment)
@@ -84,7 +90,6 @@ public class HistorialFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onStart() {
         super.onStart();
-        // Iniciar el adaptador cuando el fragmento esté visible
         if (adaptador != null) {
             adaptador.startListening();
         }
@@ -93,7 +98,6 @@ public class HistorialFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onStop() {
         super.onStop();
-        // Detener el adaptador cuando el fragmento ya no esté visible
         if (adaptador != null) {
             adaptador.stopListening();
         }

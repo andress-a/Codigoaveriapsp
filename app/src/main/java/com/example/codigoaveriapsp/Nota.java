@@ -6,10 +6,7 @@ public class Nota {
     private String codigoAveria;
     private String contenido;
     private long timestamp;
-    // Campo compuesto para consultas eficientes
-    private String usuarioId_codigoAveria;
 
-    // Constructor vacío requerido para Firebase
     public Nota() {
     }
 
@@ -54,11 +51,4 @@ public class Nota {
         this.timestamp = timestamp;
     }
 
-    public String getUsuarioId_codigoAveria() {
-        return usuarioId_codigoAveria;
-    }
-
-    public void setUsuarioId_codigoAveria(String usuarioId_codigoAveria) {
-        this.usuarioId_codigoAveria = usuarioId_codigoAveria;
-    }
 }

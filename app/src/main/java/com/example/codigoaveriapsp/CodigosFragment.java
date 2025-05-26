@@ -25,7 +25,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class CodigosFragment extends Fragment implements View.OnClickListener {
-
+    //inicializo variables esta es la parte del usuario normal(mecanico)
     RecyclerView vistaRecycler;
     FirebaseAdaptador adaptador;
     FirebaseDatabase db;
@@ -37,6 +37,7 @@ public class CodigosFragment extends Fragment implements View.OnClickListener {
 
     @Nullable
     @Override
+    //Se llama a oncreateview para el manejo de fragmentos
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_codigos, container, false);
 
@@ -63,12 +64,12 @@ public class CodigosFragment extends Fragment implements View.OnClickListener {
         vistaRecycler.setAdapter(adaptador);
         adaptador.startListening();
 
-        setupSearchView();
+        confSView();
 
         return view;
     }
-
-    private void setupSearchView() {
+    //Configurar el SearchView
+    private void confSView() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -85,7 +86,7 @@ public class CodigosFragment extends Fragment implements View.OnClickListener {
             }
         });
     }
-
+    //Realizar la búsqueda
     private void buscar(String texto, boolean guardarHistorial) {
         // Consulta para obtener los códigos que coincidan con el texto ingresado
         Query consulta = ref.orderByChild("codigo")
@@ -104,7 +105,7 @@ public class CodigosFragment extends Fragment implements View.OnClickListener {
             guardarEnHistorial(texto);
         }
     }
-
+    //Guardar en el historial
     private void guardarEnHistorial(String codigo) {
         if (usuarioActualId == null) return;
 

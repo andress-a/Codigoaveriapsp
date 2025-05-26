@@ -29,7 +29,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class CodigosFragmentAdmin extends Fragment implements View.OnClickListener {
-
+    //Se inicialian las variables
     RecyclerView vistaRecycler;
     FirebaseAdaptador adaptador;
     FirebaseDatabase db;
@@ -54,16 +54,16 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
         if (mAuth.getCurrentUser() != null) {
             usuarioActualId = mAuth.getCurrentUser().getUid();
             Log.d(TAG, "Usuario autenticado: " + usuarioActualId);
-            checkUserRole(); // Verificar si es admin
+            comprobarRol(); //Verificar si es admin o usuario normal
         } else {
             Toast.makeText(getContext(), "Debes iniciar sesión para usar la aplicación", Toast.LENGTH_SHORT).show();
         }
-
+        //Configuración del RecyclerView
         vistaRecycler = view.findViewById(R.id.recyclerView);
         searchView = view.findViewById(R.id.sView);
         fabAddCodigo = view.findViewById(R.id.fabAddCodigo);
         vistaRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        //Configuración del adaptador
         FirebaseRecyclerOptions<CodigoAveria> options = new FirebaseRecyclerOptions.Builder<CodigoAveria>()
                 .setQuery(ref, CodigoAveria.class)
                 .build();
@@ -72,13 +72,13 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
         vistaRecycler.setAdapter(adaptador);
         adaptador.startListening();
 
-        setupSearchView();
-        setupFloatingActionButton();
+        confSView();
+        mostrarFab();
 
         return view;
     }
-
-    private void checkUserRole() {
+    //Verificar si es admin o usuario normal
+    private void comprobarRol() {
         if (usuarioActualId != null) {
             usuariosRef.child(usuarioActualId).child("rol").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -105,18 +105,18 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
             });
         }
     }
-
-    private void setupFloatingActionButton() {
+    //Mostrar el FAB si es admin
+    private void mostrarFab() {
         fabAddCodigo.setOnClickListener(v -> {
             if (isAdmin) {
-                mostrarDialogoAgregarCodigo();
+                mostrarDialogoAddCodigo();
             } else {
                 Toast.makeText(getContext(), "Solo los administradores pueden añadir códigos", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-    private void mostrarDialogoAgregarCodigo() {
+    //Mostrar el diálogo para añadir un nuevo código
+    private void mostrarDialogoAddCodigo() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_agregar_codigo, null);
 
@@ -150,7 +150,6 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
 
         dialog.show();
     }
-
     private boolean validarCampos(String codigo, String descripcion, String marca, String modelo, String solucion) {
         if (codigo.isEmpty()) {
             Toast.makeText(getContext(), "El código no puede estar vacío", Toast.LENGTH_SHORT).show();
@@ -179,16 +178,16 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
 
         return true;
     }
-
+    /*El dataSnapshot se usa para verificar si el código ya existe en la base de datos */
     private void verificarYGuardarCodigo(String codigo, String descripcion, String marca, String modelo, String solucion, AlertDialog dialog) {
-        // Verificar si el código ya existe
+        //Verificar si el código ya existe
         ref.orderByChild("codigo").equalTo(codigo).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     Toast.makeText(getContext(), "Este código ya existe", Toast.LENGTH_LONG).show();
                 } else {
-                    // El código no existe, proceder a guardarlo
+                    //proceder a guardarlo
                     guardarNuevoCodigo(codigo, descripcion, marca, modelo, solucion, dialog);
                 }
             }
@@ -200,7 +199,7 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
             }
         });
     }
-
+    //Guardar el nuevo código en la base de datos
     private void guardarNuevoCodigo(String codigo, String descripcion, String marca, String modelo, String solucion, AlertDialog dialog) {
         // Crear el objeto CodigoAveria
         CodigoAveria nuevoCodigoAveria = new CodigoAveria();
@@ -222,25 +221,24 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
                     Log.e(TAG, "Error al añadir código", e);
                 });
     }
-
-    private void setupSearchView() {
+    private void confSView() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // Solo guardar en historial cuando se envía la búsqueda completa
+                //Solo guardar en historial cuando se envía la búsqueda completa
                 buscar(query, true);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Realizar la búsqueda pero NO guardar en historial durante la escritura
-                new Handler().postDelayed(() -> buscar(newText, false), 300); // 300 ms de retraso
+                //Realizar la búsqueda pero NO guardar en historial durante la escritura
+                new Handler().postDelayed(() -> buscar(newText, false), 300);
                 return true;
             }
         });
     }
-
+    //Realizar la búsqueda
     private void buscar(String texto, boolean guardarHistorial) {
         Query consulta;
 
@@ -253,7 +251,7 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
                     .startAt(texto)
                     .endAt(texto + "\uf8ff");
         }
-
+        //FirebaseRecyclerOptions se usa para configurar el adaptador
         FirebaseRecyclerOptions<CodigoAveria> opciones = new FirebaseRecyclerOptions.Builder<CodigoAveria>()
                 .setQuery(consulta, CodigoAveria.class)
                 .build();
@@ -261,12 +259,11 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
         adaptador.updateOptions(opciones);
         adaptador.notifyDataSetChanged();
 
-        // Solo guardamos en el historial si se indica explícitamente
+        //Solo guardamos en el historial si se indica explícitamente
         if (guardarHistorial && !texto.isEmpty()) {
             guardarEnHistorial(texto);
         }
     }
-
     private void guardarEnHistorial(String codigo) {
         if (usuarioActualId == null) return;
 
@@ -305,30 +302,28 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
             }
         });
     }
-
     @Override
     public void onClick(View v) {
         int position = vistaRecycler.getChildAdapterPosition(v);
         CodigoAveria seleccionado = adaptador.getItem(position);
 
-        // Mostrar la información del código en un nuevo fragmento
+        //Mostrar la información del código en un nuevo fragmento
         mostrarDetalles(seleccionado);
     }
-
     private void mostrarDetalles(CodigoAveria codigoAveria) {
-        // Guardar en historial cuando se selecciona un código específico
+        //Guardar en historial cuando se selecciona un código específico
         guardarCodigoAveria(codigoAveria);
 
-        // Mostrar detalles
+        //Mostrar detalles
         DetallesFragment detallesFragment = DetallesFragment.newInstance(codigoAveria);
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, detallesFragment)
                 .addToBackStack(null)
                 .commit();
     }
-
     private void guardarCodigoAveria(CodigoAveria codigoAveria) {
-        if (usuarioActualId == null) return;
+        if (usuarioActualId == null)
+            return;
 
         DatabaseReference historialRef = db.getReference("usuarios").child(usuarioActualId).child("historial");
 
@@ -348,6 +343,7 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
         });
     }
 
+    //on start, actividad en primer plano, On stop cuando está en segundo plano y Ondestroy cuando se cierra la app
     @Override
     public void onStart() {
         super.onStart();

@@ -15,24 +15,25 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivityAdmin extends AppCompatActivity {
     private static final String THEME_PREFS = "theme_preferences";
     private static final String IS_DARK_MODE = "is_dark_mode";
+    //aqui se le da un toque moderno
     BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Aplicar el tema antes de inflar el layout
+        //Aplicar el tema antes de inflar el layout
         aplicarTemaGuardado();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        // Cargar fragmento por defecto
+        //Cargar fragmento por defecto
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, new HomeFragment())
                 .commit();
 
-        // Listener de navegación
+        //Listener de navegación
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
 

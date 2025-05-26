@@ -40,12 +40,10 @@ public class AuthActivity extends AppCompatActivity {
         aplicarTemaGuardado();
         setContentView(R.layout.login_layout);
 
-        // Firebase - USAR LA MISMA URL QUE EN LOS OTROS FRAGMENTOS
         mAuth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://codigosaveriatfg-default-rtdb.europe-west1.firebasedatabase.app");
         usuariosRef = database.getReference("usuarios");
 
-        // Vistas
         edtEmail = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
         btnRegistrar = findViewById(R.id.btnRegistrar);
@@ -57,26 +55,22 @@ public class AuthActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            checkUserRole(currentUser.getUid());
+            comprobarRol(currentUser.getUid());
         }
     }
 
     public void click_registrar(View v) {
         String email = edtEmail.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
-
+        //Validaciones
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Por favor ingresa email y contraseña", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Validar formato de email
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(this, "Por favor ingresa un email válido", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Validar longitud de contraseña
         if (password.length() < 6) {
             Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show();
             return;
@@ -87,7 +81,7 @@ public class AuthActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            // Crear el objeto usuario con estructura completa
+                            //Creo los atributos para el usuario, el rol lo uso para funciones adicionales
                             Map<String, Object> userInfo = new HashMap<>();
                             userInfo.put("email", email);
                             userInfo.put("rol", "user");
@@ -96,7 +90,7 @@ public class AuthActivity extends AppCompatActivity {
                             Log.d(TAG, "Intentando guardar usuario con UID: " + user.getUid());
                             Log.d(TAG, "Referencia de database: " + usuariosRef.toString());
 
-                            // Guardar en Firebase Database
+                            //Guardar en Firebase
                             usuariosRef.child(user.getUid()).setValue(userInfo)
                                     .addOnSuccessListener(aVoid -> {
                                         Log.d(TAG, "Usuario guardado correctamente en la base de datos");
@@ -114,7 +108,7 @@ public class AuthActivity extends AppCompatActivity {
                                         });
 
                                         Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show();
-                                        // Redirigir directamente ya que sabemos que es un usuario nuevo con rol "user"
+                                        //Redirigir directamente
                                         irAMainActivity();
                                     })
                                     .addOnFailureListener(e -> {
@@ -146,7 +140,7 @@ public class AuthActivity extends AppCompatActivity {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
                             Log.d(TAG, "Inicio de sesión exitoso para: " + user.getEmail());
-                            checkUserRole(user.getUid());
+                            comprobarRol(user.getUid());
                         }
                     } else {
                         String errorMessage = task.getException() != null ?
@@ -157,9 +151,9 @@ public class AuthActivity extends AppCompatActivity {
                 });
     }
 
-    private void checkUserRole(String uid) {
-        Log.d(TAG, "Verificando el rol del usuario: " + uid);
+    private void comprobarRol(String uid) {
 
+        Log.d(TAG, "Verificando el rol del usuario: " + uid);
         usuariosRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -181,8 +175,8 @@ public class AuthActivity extends AppCompatActivity {
                 } else {
                     Log.w(TAG, "No se encontró información del usuario en la base de datos");
 
-                    // Si es un usuario que se acaba de registrar, puede que aún no se haya sincronizado
-                    // Intentar crear el nodo del usuario si no existe
+                    /* Si es un usuario que se acaba de registrar, puede que aún no se haya sincronizado
+                    intento crear el nodo del usuario si no existe*/
                     FirebaseUser currentUser = mAuth.getCurrentUser();
                     if (currentUser != null) {
                         Map<String, Object> defaultUserInfo = new HashMap<>();
@@ -197,7 +191,6 @@ public class AuthActivity extends AppCompatActivity {
                                 })
                                 .addOnFailureListener(e -> {
                                     Log.e(TAG, "Error al crear usuario por defecto: " + e.getMessage());
-                                    // Por defecto, redirigir como usuario normal
                                     irAMainActivity();
                                 });
                     } else {
@@ -213,14 +206,14 @@ public class AuthActivity extends AppCompatActivity {
             }
         });
     }
-
+    //Usuario normal
     private void irAMainActivity() {
         Log.d(TAG, "Redirigiendo a MainActivity");
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
-
+    //admin
     private void irAMainActivityAdmin() {
         Log.d(TAG, "Redirigiendo a MainActivity (Admin)");
         Intent intent = new Intent(this, MainActivityAdmin.class);

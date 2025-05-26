@@ -9,10 +9,9 @@ public class CodigoAveria implements Serializable
     private String marca;
     private String modelo;
     private String solucion;
-    // Timestamp para registrar cuando se accedió/guardó el código
     private long timestamp;
 
-    // Constructor vacío (necesario para Firebase)
+    // Constructor vacío para Firebase
     public CodigoAveria() {}
 
     public CodigoAveria(String codigo, String descripcion, String marca,String modelo, String solucion) {
@@ -21,7 +20,7 @@ public class CodigoAveria implements Serializable
         this.marca = marca;
         this.modelo = modelo;
         this.solucion = solucion;
-        this.timestamp = System.currentTimeMillis(); // Asignar timestamp actual por defecto
+        this.timestamp = System.currentTimeMillis(); //timestamp actual
 
     }
 
