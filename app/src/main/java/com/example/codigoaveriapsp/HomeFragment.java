@@ -197,19 +197,19 @@ public class HomeFragment extends Fragment {
 
                 switch (firstChar) {
                     case 'P':
-                        colorRes = R.color.codigo_p_background;
+                        colorRes = R.color.codigo_p;
                         break;
                     case 'B':
-                        colorRes = R.color.codigo_b_background;
+                        colorRes = R.color.codigo_b;
                         break;
                     case 'C':
-                        colorRes = R.color.codigo_c_background;
+                        colorRes = R.color.codigo_c;
                         break;
                     case 'U':
-                        colorRes = R.color.codigo_u_background;
+                        colorRes = R.color.codigo_u;
                         break;
                     default:
-                        colorRes = R.color.codigo_default_background;
+                        colorRes = R.color.codigo_defecto;
                 }
 
                 holder.codigoText.setBackgroundTintList(ColorStateList.valueOf(

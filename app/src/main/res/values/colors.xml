@@ -9,9 +9,9 @@
     <color name="secondary_text">#99000000</color>
 
     <!-- Colores para códigos OBD2 -->
-    <color name="codigo_p_background">#FF5722</color>  <!-- Naranja para códigos P (Powertrain) -->
-    <color name="codigo_b_background">#2196F3</color>  <!-- Azul para códigos B (Body) -->
-    <color name="codigo_c_background">#4CAF50</color>  <!-- Verde para códigos C (Chassis) -->
-    <color name="codigo_u_background">#9C27B0</color>  <!-- Púrpura para códigos U (Network) -->
-    <color name="codigo_default_background">#607D8B</color>  <!-- Gris azulado para otros códigos -->
+    <color name="codigo_p">#FF5722</color>
+    <color name="codigo_b">#2196F3</color>
+    <color name="codigo_c">#4CAF50</color>
+    <color name="codigo_u">#9C27B0</color>
+    <color name="codigo_defecto">#607D8B</color>
 </resources>

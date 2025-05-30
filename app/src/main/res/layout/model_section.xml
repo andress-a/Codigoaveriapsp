@@ -13,7 +13,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Model Header with Logo -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +40,6 @@
                 />
         </LinearLayout>
 
-        <!-- Model RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/model_recycler_view"
             android:layout_width="match_parent"
@@ -49,7 +47,6 @@
             android:clipToPadding="false"
             android:nestedScrollingEnabled="false" />
 
-        <!-- Ver Todos button -->
         <Button
             android:id="@+id/btn_ver_todos"
             android:layout_width="wrap_content"

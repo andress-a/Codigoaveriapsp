@@ -33,6 +33,7 @@ public class CodigosFragment extends Fragment implements View.OnClickListener {
     SearchView searchView;
     FirebaseAuth mAuth;
     String usuarioActualId;
+
     private static final String TAG = "CodigosFragment";
 
     @Nullable
@@ -61,6 +62,9 @@ public class CodigosFragment extends Fragment implements View.OnClickListener {
                 .build();
 
         adaptador = new FirebaseAdaptador(options, this);
+        adaptador.setOnItemLongClickListener((position, codigoAveria) -> {
+                Toast.makeText(getContext(), "Solo los administradores pueden eliminar códigos", Toast.LENGTH_SHORT).show();
+        });
         vistaRecycler.setAdapter(adaptador);
         adaptador.startListening();
 

@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Header with gradient background -->
+    <!-- cabecera-->
     <androidx.cardview.widget.CardView
-        android:id="@+id/header_card"
+        android:id="@+id/cabecera"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -16,13 +16,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="191dp"
-            android:background="@drawable/header_gradient"
+            android:background="@drawable/color_cabecera"
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- App Logo -->
-
-            <!-- Welcome Text with better styling -->
+            <!-- Bienvenida -->
             <TextView
                 android:id="@+id/welcome_text"
                 android:layout_width="match_parent"
@@ -32,7 +30,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
 
-            <!-- Short app description -->
+            <!-- Descripción -->
 
             <TextView
                 android:id="@+id/app_title"
@@ -53,33 +51,26 @@
                 android:textColor="@android:color/white"
                 android:textSize="14sp" />
 
-            <!-- Quick action button -->
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- ScrollView to hold all model sections -->
+    <!-- seccion de modelos -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header_card"
+        android:layout_below="@id/cabecera"
         android:fillViewport="true"
         android:clipToPadding="false"
         android:paddingTop="16dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
 
-        <!-- Container for model sections -->
         <LinearLayout
             android:id="@+id/models_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Model sections will be added here dynamically -->
-
-            <!-- Recent scans section -->
-
-            <!-- Models section -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

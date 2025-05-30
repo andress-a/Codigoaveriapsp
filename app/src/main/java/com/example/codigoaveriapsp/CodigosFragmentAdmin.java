@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
@@ -69,9 +68,9 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
                 .setQuery(ref, CodigoAveria.class)
                 .build();
 
-        // Usar el constructor original
+        //Usar el constructor original
         adaptador = new FirebaseAdaptador(options, this);
-        // Asignar el listener de long click para eliminar (solo si es admin)
+        //Asignar long click solo si es admin
         adaptador.setOnItemLongClickListener((position, codigoAveria) -> {
             if (isAdmin) {
                 mostrarDialogoEliminar(codigoAveria);
@@ -99,7 +98,7 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
                     String rol = snapshot.getValue(String.class);
                     isAdmin = "admin".equals(rol);
 
-                    // Mostrar u ocultar el FAB según el rol
+                    //Mostrar u ocultar el FAB según el rol
                     if (fabAddCodigo != null) {
                         fabAddCodigo.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
                     }
@@ -110,7 +109,7 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Log.e(TAG, "Error al verificar rol: " + error.getMessage());
-                    // Por defecto, ocultar el FAB si hay error
+                    //Por defecto, ocultar el FAB si hay error
                     if (fabAddCodigo != null) {
                         fabAddCodigo.setVisibility(View.GONE);
                     }
@@ -159,7 +158,7 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
     //Mostrar el diálogo para añadir un nuevo código
     private void mostrarDialogoAddCodigo() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_agregar_codigo, null);
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.activity_add_codigo, null);
 
         EditText etCodigo = dialogView.findViewById(R.id.etCodigo);
         EditText etDescripcion = dialogView.findViewById(R.id.etDescripcion);
@@ -169,7 +168,7 @@ public class CodigosFragmentAdmin extends Fragment implements View.OnClickListen
 
         builder.setView(dialogView)
                 .setTitle("Añadir Nuevo Código de Avería")
-                .setPositiveButton("Guardar", null) // Lo configuramos después para evitar que se cierre automáticamente
+                .setPositiveButton("Guardar", null) //se configura después asi no se cierra automáticamente
                 .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();

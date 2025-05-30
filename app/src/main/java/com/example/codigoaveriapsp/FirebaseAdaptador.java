@@ -25,7 +25,7 @@ public class FirebaseAdaptador extends FirebaseRecyclerAdapter<CodigoAveria, Fir
     public void setOnItemLongClickListener(OnItemLongClickListener listener) {
         this.longClickListener = listener;
     }
-    // Interface para manejar el click largo
+    //Interface para manejar el click largo
     public interface OnItemLongClickListener {
         void onItemLongClick(int position, CodigoAveria item);
     }

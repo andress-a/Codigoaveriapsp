@@ -54,7 +54,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Botón Acceder -->
+    <!--Acceder -->
     <Button
         android:id="@+id/btnAcceder"
         android:layout_width="0dp"
@@ -71,7 +71,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Botón Registrar -->
+    <!-- Registrar -->
     <Button
         android:id="@+id/btnRegistrar"
         android:layout_width="0dp"
